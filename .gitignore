@@ -231,3 +231,22 @@ Thumbs.db
 data/raw/
 data/processed/
 output/
+# Baza danych
+*.db
+*.sqlite
+*.sqlite3
+
+# Logi
+*.log
+*.txt
+
+# Środowisko i dane wrażliwe
+.env
+venv/
+__pycache__/
+*.pyc
+last_bgg_id.txt
+*.tmp
+
+# Inne
+/tmp/
