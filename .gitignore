@@ -205,3 +205,29 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ========== MOJE DODATKI ==========
+# Bazy danych
+*.db
+*.sqlite
+*.sqlite3
+
+# Backupy i temp
+*.bak
+*.backup
+*.tmp
+temp/
+backup_*/
+
+# Logi rozszerzone
+gamefound/
+*.log.*
+
+# Pliki systemowe
+.DS_Store
+Thumbs.db
+
+# Moje katalogi z danymi
+data/raw/
+data/processed/
+output/
