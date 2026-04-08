@@ -1,0 +1,103 @@
+==================================================
+          ŚCIĄGA DLA MALINKI (Raspberry Pi)
+==================================================
+
+1. POŁĄCZENIE Z MALINKĄ (z laptopa)
+-----------------------------------
+ssh grzybozaur@172.16.1.177
+
+2. ALIASY (skróty) – dodaj do ~/.bashrc
+----------------------------------------
+alias pokaz='tail -n 20'
+alias sledz='tail -f'
+alias info='df -h; free -h; vcgencmd measure_temp'
+alias czysc='sudo rm -rf /tmp/*'
+alias cronlist='crontab -l'
+alias crondodaj='crontab -e'
+alias logbgg='tail -n 30 ~/gamefound/bgg_log.txt'
+alias loggf='tail -n 30 ~/gamefound/log.txt'
+alias venv='cd ~/gamefound && source venv/bin/activate'
+alias venvbye='deactivate'
+alias bye='exit'
+
+Po dodaniu: source ~/.bashrc
+
+3. LOGI – JAK SPRAWDZIĆ
+------------------------
+pokaz log.txt               # ostatnie 20 linii logu Gamefound
+pokaz bgg_log.txt           # ostatnie 20 linii logu BGG
+pokaz dropbox_log.txt       # ostatnie 20 linii logu Dropbox
+sledz log.txt               # podgląd na żywo (Ctrl+C, aby zatrzymać)
+
+4. RĘCZNE URUCHAMIANIE SKRYPTÓW
+--------------------------------
+cd ~/gamefound
+source venv/bin/activate
+python skrypt.py            # Gamefound
+python pobierz_bgg.py       # BGG
+python status_report.py     # raport
+deactivate
+
+5. DROPBOX – ODSWIEŻANIE TOKENA (gdy nie działa backup)
+---------------------------------------------------------
+Na malince:
+rclone config reconnect dropbox:
+
+Na laptopie (Windows) w folderze z rclone.exe:
+.\rclone authorize "dropbox"
+Skopiuj token JSON i wklej na malinkę.
+
+Test kopiowania:
+rclone copy ~/gamefound/gamefound.db dropbox:DBGame/ --progress
+
+6. CRON – ZADANIA OKRESOWE
+---------------------------
+cronlist            # wyświetla wszystkie zadania
+crondodaj           # edytuje crontab
+
+Przykładowe zadania:
+0 2 * * * cd /home/grzybozaur/gamefound && /home/grzybozaur/gamefound/venv/bin/python skrypt.py >> log.txt 2>&1
+0 4 * * * cd /home/grzybozaur/gamefound && /home/grzybozaur/gamefound/venv/bin/python pobierz_bgg.py >> bgg_log.txt 2>&1
+0 8 * * 0 cd /home/grzybozaur/gamefound && /home/grzybozaur/gamefound/venv/bin/python status_report.py >> report_log.txt 2>&1
+0 9 1 * * cd /home/grzybozaur/gamefound && /usr/bin/rclone copy gamefound.db dropbox:DBGame/ --progress >> dropbox_log.txt 2>&1
+0 3 * * 0 rm -rf /tmp/*
+
+7. STAN SYSTEMU (miejsce, pamięć, temperatura)
+-----------------------------------------------
+df -h                       # wolne miejsce na karcie SD
+free -h                     # RAM i swap
+vcgencmd measure_temp       # temperatura CPU
+uptime                      # jak długo działa
+
+8. CZYSZCZENIE /tmp (gdy zapchany)
+-----------------------------------
+sudo rm -rf /tmp/*
+Można dodać do crona (co tydzień): 0 3 * * 0 rm -rf /tmp/*
+
+9. WYJŚCIE Z RÓŻNYCH TRYBÓW
+----------------------------
+nano / less / man           → naciśnij q
+tail -f                     → Ctrl+C
+vim / vi                    → Esc, potem :q! i Enter
+SQLite                      → .quit lub Ctrl+D
+Python interaktywny         → exit() lub Ctrl+D
+SSH sesja                   → exit lub Ctrl+D
+
+10. WAŻNE ŚCIEŻKI
+-----------------
+Katalog projektu:          /home/grzybozaur/gamefound
+Baza danych:               /home/grzybozaur/gamefound/gamefound.db
+Logi:                      /home/grzybozaur/gamefound/*.txt
+Środowisko wirtualne:      /home/grzybozaur/gamefound/venv
+Konfiguracja rclone:       ~/.config/rclone/rclone.conf
+
+11. ZATRZYMANIE / RESTART MALINKI
+----------------------------------
+sudo shutdown now          # wyłączenie
+sudo reboot                # restart
+
+12. AKTUALIZACJA SYSTEMU (co 2-4 tygodnie)
+-------------------------------------------
+sudo apt update
+sudo apt upgrade -y
+sudo apt autoremove -y
